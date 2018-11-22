@@ -95,7 +95,7 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
     UINT32 phtCounter = pht[phtIndex];
-    UINT32 x=phtCounter, y;
+    UINT32 x=phtCounter, y=0;
     while (x > 0) {
       y += x^1;
       x = x >> 1; 
@@ -112,7 +112,7 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
     UINT32 bhtIndex   = (PC >> (32-bht_bit_size));
     UINT16 bht_result = bht[bhtIndex];
     UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
-    UINT32 x=pht_local_index, y;
+    UINT32 x=pht_local_index, y=0;
     while (x > 0) {
       y += x^1;
       x = x >> 1; 
