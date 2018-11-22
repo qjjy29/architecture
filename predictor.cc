@@ -83,10 +83,10 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
   UINT32 pCC   = PC >> (32-TOUR_LEN);
   if (predictorChooseCounter[pCC] < 2) {
         //use global predictor
-       GetGlobalPrediction(PC);
+      return GetGlobalPrediction(PC);
   } else {
       //use local predictor
-      GetLocalPrediction(PC);
+      return GetLocalPrediction(PC);
   }
 }
 
