@@ -161,7 +161,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   if(resolveDir == TAKEN){
     pht[phtIndex] = StateAfterOne(phtCounter, PHT_CTR_MAX);
   }else{
-    pht[phtIndex] = StateAfterZero(phtCounter);
+    pht[phtIndex] = StateAfterZero(phtCounter, PHT_CTR_MAX);
   }
 
   // update the GHR for global predictor
@@ -199,7 +199,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   if(resolveDir == TAKEN){
     pht_local[pht_local_index] = StateAfterOne(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }else{
-    pht_local[pht_local_index] = StateAfterZero(pht_local_counter);
+    pht_local[pht_local_index] = StateAfterZero(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }
 
   //update the bht for local predictor
