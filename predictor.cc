@@ -1,17 +1,19 @@
 #include "predictor.h"
 
 
-#define PHT_CTR_MAX  3
+#define PHT_CTR_MAX  7//3
 //chuan: for tournament predictor
 #define TOURNAMENT_CTR_MAX 3
-#define PHT_CTR_INIT 2
+#define PHT_CTR_INIT 4//2
+#define PHT_CTR_BAR  2
 
 #define HIST_LEN   16
 #define TOUR_LEN   16
 #define BHT_BIT_SIZE 11
 #define BHT_HIST_LENGTH 16
-#define PHT_LOCAL_CTR_INIT 2
-#define PHT_LOCAL_CTR_MAX  3
+#define PHT_LOCAL_CTR_INIT 4//2
+#define PHT_LOCAL_CTR_MAX  7//3
+#define PHT_LOCAL_CTR_BAR  2
 #define UINT16      unsigned short int
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
@@ -93,11 +95,23 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
     UINT32 phtCounter = pht[phtIndex];
+    UINT32 x=phtCounter, y;
+    while (x > 0) {
+      y += x^1;
+      x = x >> 1; 
+    }
+    if (y >= PHT_CTR_BAR) {
+      return TAKEN;
+    } else {
+      return NOT_TAKEN;
+    }
+    '''
     if(phtCounter > PHT_CTR_MAX/2){
         return TAKEN;
     }else{
         return NOT_TAKEN;
     }
+    '''
 }
 
 //for local predictor
@@ -105,12 +119,34 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
     UINT32 bhtIndex   = (PC >> (32-bht_bit_size));
     UINT16 bht_result = bht[bhtIndex];
     UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
-
+    UINT32 x=pht_local_index, y;
+    while (x > 0) {
+      y += x^1;
+      x = x >> 1; 
+    }
+    if (y >= PHT_LOCAL_CTR_BAR) {
+      return TAKEN;
+    } else {
+      return NOT_TAKEN;
+    }
+    '''
     if(pht_local[pht_local_index] > PHT_LOCAL_CTR_MAX/2){
         return TAKEN;
     }else{
         return NOT_TAKEN;
     }
+    '''
+}
+
+//my new state machine
+UINT32  PREDICTOR::StateAfterZero(UINT32 x, UINT32 max){
+  x = (x << 1);
+  return x^max;
+}
+
+UINT32  PREDICTOR::StateAfterOne(UINT32 x, UINT32 max){
+  x = (x << 1)+1;
+  return x^max;
 }
 
 /////////////////////////////////////////////////////////////
@@ -123,9 +159,9 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
 
   // update the PHT for global predictor
   if(resolveDir == TAKEN){
-    pht[phtIndex] = SatIncrement(phtCounter, PHT_CTR_MAX);
+    pht[phtIndex] = StateAfterOne(phtCounter, PHT_CTR_MAX);
   }else{
-    pht[phtIndex] = SatDecrement(phtCounter);
+    pht[phtIndex] = StateAfterZero(phtCounter);
   }
 
   // update the GHR for global predictor
@@ -161,9 +197,9 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
   UINT32 pht_local_counter = pht_local[pht_local_index];
   if(resolveDir == TAKEN){
-    pht_local[pht_local_index] = SatIncrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    pht_local[pht_local_index] = StateAfterOne(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }else{
-    pht_local[pht_local_index] = SatDecrement(pht_local_counter);
+    pht_local[pht_local_index] = StateAfterZero(pht_local_counter);
   }
 
   //update the bht for local predictor
