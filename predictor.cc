@@ -105,13 +105,6 @@ bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     } else {
       return NOT_TAKEN;
     }
-    '''
-    if(phtCounter > PHT_CTR_MAX/2){
-        return TAKEN;
-    }else{
-        return NOT_TAKEN;
-    }
-    '''
 }
 
 //for local predictor
@@ -129,13 +122,6 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
     } else {
       return NOT_TAKEN;
     }
-    '''
-    if(pht_local[pht_local_index] > PHT_LOCAL_CTR_MAX/2){
-        return TAKEN;
-    }else{
-        return NOT_TAKEN;
-    }
-    '''
 }
 
 //my new state machine
