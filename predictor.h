@@ -54,6 +54,10 @@ class PREDICTOR{
   bool    GetLocalPrediction(UINT32 PC);
   bool    GetGlobalPrediction(UINT32 PC);
 
+  //new state machine
+  UINT32    StateAfterZero(UINT32 x, UINT32 max);
+  UINT32    StateAfterOne(UINT32 x, UINT32 max);
+
   void    UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT32 branchTarget);
   void    TrackOtherInst(UINT32 PC, OpType opType, UINT32 branchTarget);
 
