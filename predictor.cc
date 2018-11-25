@@ -168,11 +168,11 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   if(resolveDir == TAKEN){
     pht[phtIndex] = StateAfterOne(phtCounter, PHT_CTR_MAX);
     if (lpt[phtIndex] == 0) {
-      lct[phtIndex] += 1
+      lct[phtIndex] += 1;
     } else if (lpt[phtIndex] == lct[phtIndex]) {
-      lpt[phtIndex] = 0
+      lpt[phtIndex] = 0;
     } else {
-      lct[phtIndex] += 1
+      lct[phtIndex] += 1;
     }
   }else{
     pht[phtIndex] = StateAfterZero(phtCounter, PHT_CTR_MAX);
