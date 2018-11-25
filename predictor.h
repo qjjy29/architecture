@@ -40,8 +40,9 @@ class PREDICTOR{
   UINT32 *predictorChooseCounter;
   UINT32 numTournamentCounter;
 
-
-
+  //for loop counter
+  UINT32 *lct; // loop counter table
+  UINT32 *lpt; // loop period table
 
  public:
 
