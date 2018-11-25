@@ -97,7 +97,7 @@ bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     UINT32 phtCounter = pht[phtIndex];
     UINT32 x=phtCounter, y=0;
     while (x > 0) {
-      y += x^1;
+      y += x & 1;
       x = x >> 1; 
     }
     if (y >= PHT_CTR_BAR) {
@@ -114,7 +114,7 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
     UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
     UINT32 x=pht_local_index, y=0;
     while (x > 0) {
-      y += x^1;
+      y += x & 1;
       x = x >> 1; 
     }
     if (y >= PHT_LOCAL_CTR_BAR) {
@@ -127,12 +127,12 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
 //my new state machine
 UINT32  PREDICTOR::StateAfterZero(UINT32 x, UINT32 max){
   x = (x << 1);
-  return x^max;
+  return x & max;
 }
 
 UINT32  PREDICTOR::StateAfterOne(UINT32 x, UINT32 max){
   x = (x << 1)+1;
-  return x^max;
+  return x & max;
 }
 
 /////////////////////////////////////////////////////////////
