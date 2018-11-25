@@ -1,18 +1,18 @@
 #include "predictor.h"
 
 
-#define PHT_CTR_MAX  7//3
+#define PHT_CTR_MAX  5//3
 //chuan: for tournament predictor
 #define TOURNAMENT_CTR_MAX 3
-#define PHT_CTR_INIT 4//2
+#define PHT_CTR_INIT 3//2
 #define PHT_CTR_BAR  2
 
 #define HIST_LEN   16
 #define TOUR_LEN   16
 #define BHT_BIT_SIZE 11
 #define BHT_HIST_LENGTH 16
-#define PHT_LOCAL_CTR_INIT 4//2
-#define PHT_LOCAL_CTR_MAX  7//3
+#define PHT_LOCAL_CTR_INIT 3//2
+#define PHT_LOCAL_CTR_MAX  5//3
 #define PHT_LOCAL_CTR_BAR  2
 #define UINT16      unsigned short int
 
@@ -94,7 +94,7 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 
   //Add for tournament predictor: when 00, 01, use global predictor; when 10, 11, use local predictor
   UINT32 pCC   = PC >> (32-TOUR_LEN);
-  if (predictorChooseCounter[pCC] < 2) {
+  if (predictorChooseCounter[pCC] < TOURNAMENT_CTR_MAX/2+1) {
         //use global predictor
       return GetGlobalPrediction(PC);
   } else {
@@ -108,23 +108,10 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
     UINT32 phtCounter = pht[phtIndex];
-    if (false) {
-      if (lct[phtIndex] == lpt[phtIndex]) {
+    if(phtCounter > PHT_CTR_MAX/2){
         return TAKEN;
-      } else {
+    }else{
         return NOT_TAKEN;
-      }
-    } else {
-      UINT32 x=phtCounter, y=0;
-      while (x > 0) {
-        y += x & 1;
-        x = x >> 1; 
-      }
-      if (y >= PHT_CTR_BAR) {
-        return TAKEN;
-      } else {
-        return NOT_TAKEN;
-      }
     }
 }
 
@@ -133,15 +120,10 @@ bool   PREDICTOR::GetLocalPrediction(UINT32 PC){
     UINT32 bhtIndex   = (PC >> (32-bht_bit_size));
     UINT16 bht_result = bht[bhtIndex];
     UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
-    UINT32 x=pht_local[pht_local_index], y=0;
-    while (x > 0) {
-      y += x & 1;
-      x = x >> 1; 
-    }
-    if (y >= PHT_LOCAL_CTR_BAR) {
-      return TAKEN;
-    } else {
-      return NOT_TAKEN;
+    if(pht_local[pht_local_index] > PHT_LOCAL_CTR_MAX/2){
+        return TAKEN;
+    }else{
+        return NOT_TAKEN;
     }
 }
 
@@ -166,7 +148,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
 
   // update the PHT for global predictor
   if(resolveDir == TAKEN){
-    pht[phtIndex] = StateAfterOne(phtCounter, PHT_CTR_MAX);
+    pht[phtIndex] = SatIncrement(phtCounter, PHT_CTR_MAX);
     // if (lpt[phtIndex] == 0) {
     //   lct[phtIndex] += 1;
     // } else if (lpt[phtIndex] == lct[phtIndex]) {
@@ -175,7 +157,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
     //   lct[phtIndex] += 1;
     // }
   }else{
-    pht[phtIndex] = StateAfterZero(phtCounter, PHT_CTR_MAX);
+    pht[phtIndex] = SatDecrement(phtCounter, PHT_CTR_MAX);
     // lpt[phtIndex] = lct[phtIndex];
     // lct[phtIndex] = 0;
   }
@@ -213,9 +195,9 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
   UINT32 pht_local_counter = pht_local[pht_local_index];
   if(resolveDir == TAKEN){
-    pht_local[pht_local_index] = StateAfterOne(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    pht_local[pht_local_index] = SatIncrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }else{
-    pht_local[pht_local_index] = StateAfterZero(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    pht_local[pht_local_index] = SatDecrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }
 
   //update the bht for local predictor
