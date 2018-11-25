@@ -75,7 +75,7 @@ PREDICTOR::PREDICTOR(void){
     pht_local[ll]=PHT_LOCAL_CTR_INIT;
   }
 
-  Initialization for loop predictor
+  // Initialization for loop predictor
 
   lct = new UINT32[numPhtEntries];
   lpt = new UINT32[numPhtEntries];
