@@ -77,13 +77,13 @@ PREDICTOR::PREDICTOR(void){
 
   //Initialization for loop predictor
 
-  lct = new UINT32[numPhtEntries];
-  lpt = new UINT32[numPhtEntries];
+  // lct = new UINT32[numPhtEntries];
+  // lpt = new UINT32[numPhtEntries];
 
-  for(UINT32 ii=0; ii< numPhtEntries; ii++){
-    lct[ii]=0;
-    lpt[ii]=0;
-  }
+  // for(UINT32 ii=0; ii< numPhtEntries; ii++){
+  //   lct[ii]=0;
+  //   lpt[ii]=0;
+  // }
 
 }
 
@@ -108,7 +108,7 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 bool   PREDICTOR::GetGlobalPrediction(UINT32 PC){
     UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
     UINT32 phtCounter = pht[phtIndex];
-    if (lpt[phtIndex] >= LOOP_THRESHOLD) {
+    if (false) {
       if (lct[phtIndex] == lpt[phtIndex]) {
         return TAKEN;
       } else {
@@ -167,17 +167,17 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   // update the PHT for global predictor
   if(resolveDir == TAKEN){
     pht[phtIndex] = StateAfterOne(phtCounter, PHT_CTR_MAX);
-    if (lpt[phtIndex] == 0) {
-      lct[phtIndex] += 1;
-    } else if (lpt[phtIndex] == lct[phtIndex]) {
-      lpt[phtIndex] = 0;
-    } else {
-      lct[phtIndex] += 1;
-    }
+    // if (lpt[phtIndex] == 0) {
+    //   lct[phtIndex] += 1;
+    // } else if (lpt[phtIndex] == lct[phtIndex]) {
+    //   lpt[phtIndex] = 0;
+    // } else {
+    //   lct[phtIndex] += 1;
+    // }
   }else{
     pht[phtIndex] = StateAfterZero(phtCounter, PHT_CTR_MAX);
-    lpt[phtIndex] = lct[phtIndex];
-    lct[phtIndex] = 0;
+    // lpt[phtIndex] = lct[phtIndex];
+    // lct[phtIndex] = 0;
   }
 
   // update the GHR for global predictor
