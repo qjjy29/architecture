@@ -1,23 +1,23 @@
 #include "predictor.h"
 
 
-#define PHT_CTR_MAX  5//3
+#define PHT_CTR_MAX  7//3
 //chuan: for tournament predictor
 #define TOURNAMENT_CTR_MAX 3
-#define PHT_CTR_INIT 3//2
+#define PHT_CTR_INIT 4//2
 #define PHT_CTR_BAR  2
 
 #define HIST_LEN   16
 #define TOUR_LEN   16
 #define BHT_BIT_SIZE 11
 #define BHT_HIST_LENGTH 16
-#define PHT_LOCAL_CTR_INIT 3//2
-#define PHT_LOCAL_CTR_MAX  5//3
+#define PHT_LOCAL_CTR_INIT 4//2
+#define PHT_LOCAL_CTR_MAX  7//3
 #define PHT_LOCAL_CTR_BAR  2
 #define UINT16      unsigned short int
 
 // loop prediction
-#define LOOP_THRESHOLD  15
+#define LOOP_THRESHOLD  7
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
 // Total storage budget: 52KB + 32 bits
