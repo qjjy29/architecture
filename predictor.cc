@@ -157,7 +157,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
     //   lct[phtIndex] += 1;
     // }
   }else{
-    pht[phtIndex] = SatDecrement(phtCounter, PHT_CTR_MAX);
+    pht[phtIndex] = SatDecrement(phtCounter);
     // lpt[phtIndex] = lct[phtIndex];
     // lct[phtIndex] = 0;
   }
@@ -197,7 +197,7 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   if(resolveDir == TAKEN){
     pht_local[pht_local_index] = SatIncrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
   }else{
-    pht_local[pht_local_index] = SatDecrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    pht_local[pht_local_index] = SatDecrement(pht_local_counter);
   }
 
   //update the bht for local predictor
