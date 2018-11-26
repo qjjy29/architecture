@@ -7,10 +7,10 @@
 #define PHT_CTR_INIT 4//2
 #define PHT_CTR_BAR  2
 
-#define HIST_LEN   16
+#define HIST_LEN   17
 #define TOUR_LEN   16
 #define BHT_BIT_SIZE 11
-#define BHT_HIST_LENGTH 16
+#define BHT_HIST_LENGTH 17
 #define PHT_LOCAL_CTR_INIT 4//2
 #define PHT_LOCAL_CTR_MAX  7//3
 #define PHT_LOCAL_CTR_BAR  2
@@ -18,6 +18,7 @@
 
 // loop prediction
 #define LOOP_THRESHOLD  7
+#define GREEDY  1
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
 // Total storage budget: 52KB + 32 bits
@@ -156,7 +157,11 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
 
   // update the PHT for global predictor
   if(resolveDir == TAKEN){
-    pht[phtIndex] = SatIncrement(phtCounter, PHT_CTR_MAX);
+    if (GREEDY == 1) {
+      pht[phtIndex] = SatIncrementGreedy(phtCounter, PHT_CTR_MAX);
+    } else {
+      pht[phtIndex] = SatIncrement(phtCounter, PHT_CTR_MAX);
+    }
     if (lpt[phtIndex] == 0) {
       lct[phtIndex] += 1;
     } else if (lpt[phtIndex] == lct[phtIndex]) {
@@ -165,7 +170,11 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
       lct[phtIndex] += 1;
     }
   }else{
-    pht[phtIndex] = SatDecrement(phtCounter);
+    if (GREEDY == 1) {
+      pht[phtIndex] = SatDecrementGreedy(phtCounter, PHT_CTR_MAX);
+    } else {
+      pht[phtIndex] = SatDecrement(phtCounter);
+    }
     lpt[phtIndex] = lct[phtIndex];
     lct[phtIndex] = 0;
   }
@@ -203,9 +212,18 @@ void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT3
   UINT32 pht_local_index = (PC^(UINT32)(bht_result))% (numPhtLocalEntries);
   UINT32 pht_local_counter = pht_local[pht_local_index];
   if(resolveDir == TAKEN){
-    pht_local[pht_local_index] = SatIncrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    if (GREEDY == 1) {
+      pht_local[pht_local_index] = SatIncrementGreedy(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    } else {
+      pht_local[pht_local_index] = SatIncrement(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    }
   }else{
-    pht_local[pht_local_index] = SatDecrement(pht_local_counter);
+    if (GREEDY == 1) {
+      pht_local[pht_local_index] = SatDecrementGreedy(pht_local_counter, PHT_LOCAL_CTR_MAX);
+    } else {
+      pht_local[pht_local_index] = SatDecrement(pht_local_counter);
+    }
+    
   }
 
   //update the bht for local predictor
