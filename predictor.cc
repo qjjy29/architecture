@@ -147,6 +147,20 @@ UINT32  PREDICTOR::StateAfterOne(UINT32 x, UINT32 max){
   return x & max;
 }
 
+UINT32 SatIncrementGreedy(UINT32 x, UINT32 max)
+{
+  if (x==max/2) return x+max/2+1;
+  if (x<max) return x+1;
+  return x;
+}
+
+UINT32 SatDecrementGreedy(UINT32 x, UINT32 max)
+{
+  if(x==max/2+1) return 0;
+  if(x>0) return x-1;
+  return x;
+}
+
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 

@@ -46,20 +46,6 @@ static inline UINT32 SatDecrement(UINT32 x)
   return x;
 }
 
-static inline UINT32 SatIncrementGreedy(UINT32 x, UINT32 max)
-{
-  if (x==max/2) return x+max/2+1;
-  if (x<max) return x+1;
-  return x;
-}
-
-static inline UINT32 SatDecrementGreedy(UINT32 x, UINT32 max)
-{
-  if(x==max/2+1) return 0;
-  if(x>0) return x-1;
-  return x;
-}
-
 
 #endif
 
